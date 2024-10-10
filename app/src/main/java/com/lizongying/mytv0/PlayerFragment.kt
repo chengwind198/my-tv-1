@@ -116,13 +116,17 @@ class PlayerFragment : Fragment() {
 
                     override fun onPlayerError(error: PlaybackException) {
                         super.onPlayerError(error)
-                        tvModel?.setErrInfo(R.string.play_error.getString())
+                        tvModel?.setErrInfo(
+                            R.string.play_error.getString() + "," + error.errorCode + ","
+                                    + error.message + "," + error.cause + ","
+                                    + tvModel?.tv?.title + "," + tvModel?.getVideoUrl()
+                        )
                         if (tvModel?.getSourceType() == SourceType.UNKNOWN) {
-                            tvModel?.nextSource()
-                        }
-                        if (tvModel!!.retryTimes < tvModel!!.retryMaxTimes) {
-                            tvModel?.setReady()
-                            tvModel!!.retryTimes++
+                            if (tvModel!!.retryTimes < tvModel!!.retryMaxTimes && !tvModel!!.getFinishedTry()) {
+                                tvModel?.nextSource()
+                                tvModel?.setReady()
+                                tvModel!!.retryTimes++
+                            }
                         }
                     }
                 })
@@ -185,19 +189,19 @@ class PlayerFragment : Fragment() {
             } else {
                 val mediaItem = tvModel.getMediaItem()
                 if (mediaItem == null) {
-                    tvModel.setErrInfo(R.string.play_error.getString())
-                    if (tvModel.getSourceType() == SourceType.UNKNOWN) {
-                        tvModel.nextSource()
-                    }
-                    if (tvModel.retryTimes < tvModel.retryMaxTimes) {
-                        tvModel.setReady()
-                        tvModel.retryTimes++
-                    }
+//                    tvModel.setErrInfo(R.string.play_error.getString())
+//                    if (tvModel.getSourceType() == SourceType.UNKNOWN) {
+//                        tvModel.nextSource()
+//                        if (tvModel.retryTimes < tvModel.retryMaxTimes) {
+//                            tvModel.setReady()
+//                            tvModel.retryTimes++
+//                        }
+//                    }
                     return
                 }
                 setMediaItem(mediaItem)
+                tvModel.setFinishedTry(true);
             }
-
             prepare()
         }
     }

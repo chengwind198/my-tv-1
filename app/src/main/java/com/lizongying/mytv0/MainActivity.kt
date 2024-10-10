@@ -383,6 +383,7 @@ class MainActivity : AppCompatActivity() {
             val tvModel = viewModel.groupModel.getPosition(position)
 
             tvModel?.setReady()
+            tvModel?.setFinishedTry(false);
             viewModel.groupModel.setPlaying()
             viewModel.groupModel.getCurrentList()?.setPlaying()
 
@@ -426,6 +427,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         tvModel?.setReady()
+        tvModel?.setFinishedTry(false)
         viewModel.groupModel.setPlaying()
         viewModel.groupModel.getCurrentList()?.setPlaying()
 

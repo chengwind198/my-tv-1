@@ -306,6 +306,7 @@ class SettingFragment : Fragment() {
             SP.position = 0
             val tvModel = viewModel.groupModel.getPosition(0)
             tvModel?.setReady()
+            tvModel?.setFinishedTry(false)
             viewModel.groupModel.setPlaying()
             viewModel.groupModel.getCurrentList()?.setPlaying()
             SP.showAllChannels = SP.DEFAULT_SHOW_ALL_CHANNELS
