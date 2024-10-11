@@ -29,7 +29,6 @@ class TVModel(var tv: TV) : ViewModel() {
     var retryTimes = 0
     var retryMaxTimes = 10
     var programUpdateTime = 0L
-    private var finishedTry =false
 
     private var _groupIndex = 0
     val groupIndex: Int
@@ -41,14 +40,6 @@ class TVModel(var tv: TV) : ViewModel() {
 
     fun getGroupIndexInAll(): Int {
         return _groupIndex
-    }
-
-    fun setFinishedTry(_finishedTry: Boolean) {
-        finishedTry = _finishedTry
-    }
-
-    fun getFinishedTry(): Boolean {
-        return finishedTry
     }
 
     var listIndex = 0
@@ -79,7 +70,7 @@ class TVModel(var tv: TV) : ViewModel() {
     val program: LiveData<MutableList<Program>>
         get() = _program
 
-    public fun getVideoUrl(): String? {
+    private fun getVideoUrl(): String? {
         if (_videoIndex.value == null || tv.uris.isEmpty()) {
             return null
         }
@@ -177,12 +168,12 @@ class TVModel(var tv: TV) : ViewModel() {
             addSource(SourceType.HLS)
         } else if (path.lowercase().endsWith(".mpd")) {
             addSource(SourceType.DASH)
-        } else if (scheme.lowercase() == "rtsp" || scheme.lowercase() == "rtp") {
+        } else if (scheme.lowercase() == "rtsp") {
             addSource(SourceType.RTSP)
         } else {
-            addSource(SourceType.UNKNOWN)
+//            addSource(SourceType.UNKNOWN)
 //            addSource(SourceType.PROGRESSIVE)
-//            addSource(SourceType.HLS)
+            addSource(SourceType.HLS)
         }
 
         nextSource()
@@ -190,20 +181,17 @@ class TVModel(var tv: TV) : ViewModel() {
 
     private fun addSource(sourceType: SourceType) {
         sources[0] = sourceType
-        if (SourceType.UNKNOWN == sourceType) {
-            for (i in listOf(
-                SourceType.PROGRESSIVE,
-                SourceType.HLS,
-                SourceType.RTSP,
-                SourceType.DASH,
-                SourceType.UNKNOWN
-            )) {
-                if (i != sourceType) {
-                    sources.add(i)
-                }
+
+        for (i in listOf(
+            SourceType.PROGRESSIVE,
+            SourceType.HLS,
+            SourceType.RTSP,
+            SourceType.DASH,
+            SourceType.UNKNOWN
+        )) {
+            if (i != sourceType) {
+                sources.add(i)
             }
-        }else{
-            sources.add(SourceType.UNKNOWN)
         }
     }
 

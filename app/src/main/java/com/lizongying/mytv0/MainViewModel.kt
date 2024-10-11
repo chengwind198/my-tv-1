@@ -101,7 +101,7 @@ class MainViewModel : ViewModel() {
                 val response = HttpClient.okHttpClient.newCall(request).execute()
 
                 if (response.isSuccessful) {
-                    val res = EPGXmlParser().parse(response.body!!.byteStream())
+                    val res = EPGXmlParser().parse(response.body()!!.byteStream())
 
                     withContext(Dispatchers.Main) {
                         for (m in listModel) {
@@ -109,7 +109,7 @@ class MainViewModel : ViewModel() {
                         }
                     }
                 } else {
-                    Log.e(TAG, "EPG ${response.code}")
+                    Log.e(TAG, "EPG ${response.code()}")
                     R.string.epg_status_err.showToast()
                 }
             }
@@ -131,7 +131,7 @@ class MainViewModel : ViewModel() {
                     if (!file.exists()) {
                         file.createNewFile()
                     }
-                    val str = response.body!!.string()
+                    val str = response.body()!!.string()
                     withContext(Dispatchers.Main) {
                         if (str2List(str)) {
                             file.writeText(str)
@@ -143,7 +143,7 @@ class MainViewModel : ViewModel() {
                         }
                     }
                 } else {
-                    Log.e(TAG, "Request status ${response.code}")
+                    Log.e(TAG, "Request status ${response.code()}")
                     R.string.channel_status_error.showToast()
                 }
             }

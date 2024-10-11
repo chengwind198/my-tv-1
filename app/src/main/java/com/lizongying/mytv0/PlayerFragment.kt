@@ -116,17 +116,13 @@ class PlayerFragment : Fragment() {
 
                     override fun onPlayerError(error: PlaybackException) {
                         super.onPlayerError(error)
-                        tvModel?.setErrInfo(
-                            R.string.play_error.getString() + "," + error.errorCode + ","
-                                    + error.message + "," + error.cause + ","
-                                    + tvModel?.tv?.title + "," + tvModel?.getVideoUrl()
-                        )
+                        tvModel?.setErrInfo(R.string.play_error.getString())
                         if (tvModel?.getSourceType() == SourceType.UNKNOWN) {
-                            if (tvModel!!.retryTimes < tvModel!!.retryMaxTimes && !tvModel!!.getFinishedTry()) {
-                                tvModel?.nextSource()
-                                tvModel?.setReady()
-                                tvModel!!.retryTimes++
-                            }
+                            tvModel?.nextSource()
+                        }
+                        if (tvModel!!.retryTimes < tvModel!!.retryMaxTimes) {
+                            tvModel?.setReady()
+                            tvModel!!.retryTimes++
                         }
                     }
                 })
@@ -189,19 +185,19 @@ class PlayerFragment : Fragment() {
             } else {
                 val mediaItem = tvModel.getMediaItem()
                 if (mediaItem == null) {
-//                    tvModel.setErrInfo(R.string.play_error.getString())
-//                    if (tvModel.getSourceType() == SourceType.UNKNOWN) {
-//                        tvModel.nextSource()
-//                        if (tvModel.retryTimes < tvModel.retryMaxTimes) {
-//                            tvModel.setReady()
-//                            tvModel.retryTimes++
-//                        }
-//                    }
+                    tvModel.setErrInfo(R.string.play_error.getString())
+                    if (tvModel.getSourceType() == SourceType.UNKNOWN) {
+                        tvModel.nextSource()
+                    }
+                    if (tvModel.retryTimes < tvModel.retryMaxTimes) {
+                        tvModel.setReady()
+                        tvModel.retryTimes++
+                    }
                     return
                 }
                 setMediaItem(mediaItem)
-                tvModel.setFinishedTry(true);
             }
+
             prepare()
         }
     }
@@ -234,6 +230,11 @@ class PlayerFragment : Fragment() {
     override fun onStart() {
         Log.i(TAG, "onStart")
         super.onStart()
+    }
+
+    override fun onResume() {//move from onstart to onresume, for fix bug on sharp tv
+        Log.i(TAG, "play onResume")
+        super.onResume()
         if (player?.isPlaying == false) {
             Log.i(TAG, "replay")
             player?.prepare()

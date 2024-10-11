@@ -173,7 +173,6 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
             it.setPosition(position)
             it.setPlaying()
             it.getCurrent()?.setReady()
-            it.getCurrent()?.setFinishedTry(false)
         }
         (activity as MainActivity).hideMenuFragment()
     }

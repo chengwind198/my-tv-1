@@ -69,8 +69,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        window.statusBarColor = Color.TRANSPARENT
-        window.navigationBarColor = Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.statusBarColor = Color.TRANSPARENT
+                window.navigationBarColor = Color.TRANSPARENT
+            }
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.navigationBarDividerColor = Color.TRANSPARENT
         }
@@ -383,7 +391,6 @@ class MainActivity : AppCompatActivity() {
             val tvModel = viewModel.groupModel.getPosition(position)
 
             tvModel?.setReady()
-            tvModel?.setFinishedTry(false);
             viewModel.groupModel.setPlaying()
             viewModel.groupModel.getCurrentList()?.setPlaying()
 
@@ -427,7 +434,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         tvModel?.setReady()
-        tvModel?.setFinishedTry(false)
         viewModel.groupModel.setPlaying()
         viewModel.groupModel.getCurrentList()?.setPlaying()
 
