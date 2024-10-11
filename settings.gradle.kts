@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "My TV 0"
+rootProject.name = "My TV 1"
 include(":app")
  

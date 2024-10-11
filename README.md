@@ -73,24 +73,3 @@ adb install my-tv-0.apk
 ```
 
 小米電視可以使用小米電視助手進行安裝
-
-## TODO
-
-* 軟解
-* 支持回看
-* 詳細EPG
-* 淺色菜單
-* 無效的頻道？
-* 判断文件是否被修改
-* 多源管理
-* 如果上次播放頻道不在收藏？
-* 當list為空，顯示group
-* 默認頻道菜單顯示
-
-## 讚賞
-
-![image](./screenshots/appreciate.jpeg)
-
-## 感謝
-
-[live](https://github.com/fanmingming/live)
