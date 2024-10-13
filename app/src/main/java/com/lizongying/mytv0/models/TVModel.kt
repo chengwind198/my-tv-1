@@ -29,6 +29,7 @@ class TVModel(var tv: TV) : ViewModel() {
     var retryTimes = 0
     var retryMaxTimes = 10
     var programUpdateTime = 0L
+    var finishedTry =false
 
     private var _groupIndex = 0
     val groupIndex: Int
@@ -48,7 +49,7 @@ class TVModel(var tv: TV) : ViewModel() {
         mutableListOf(
             SourceType.UNKNOWN,
         )
-    private var sourceIndex = -1
+    var sourceIndex = -1
 
     private val _errInfo = MutableLiveData<String>()
     val errInfo: LiveData<String>
@@ -70,7 +71,7 @@ class TVModel(var tv: TV) : ViewModel() {
     val program: LiveData<MutableList<Program>>
         get() = _program
 
-    private fun getVideoUrl(): String? {
+    public fun getVideoUrl(): String? {
         if (_videoIndex.value == null || tv.uris.isEmpty()) {
             return null
         }
@@ -168,30 +169,33 @@ class TVModel(var tv: TV) : ViewModel() {
             addSource(SourceType.HLS)
         } else if (path.lowercase().endsWith(".mpd")) {
             addSource(SourceType.DASH)
-        } else if (scheme.lowercase() == "rtsp") {
+        } else if (scheme.lowercase() == "rtsp" || scheme.lowercase() == "rtp") {
             addSource(SourceType.RTSP)
         } else {
-//            addSource(SourceType.UNKNOWN)
+            addSource(SourceType.UNKNOWN)
 //            addSource(SourceType.PROGRESSIVE)
-            addSource(SourceType.HLS)
+//            addSource(SourceType.HLS)
         }
 
         nextSource()
     }
 
     private fun addSource(sourceType: SourceType) {
-        sources[0] = sourceType
-
-        for (i in listOf(
-            SourceType.PROGRESSIVE,
-            SourceType.HLS,
-            SourceType.RTSP,
-            SourceType.DASH,
-            SourceType.UNKNOWN
-        )) {
-            if (i != sourceType) {
-                sources.add(i)
+        if (SourceType.UNKNOWN == sourceType) {
+            for (i in listOf(
+                SourceType.HLS,
+                SourceType.PROGRESSIVE,
+                SourceType.RTSP,
+                SourceType.DASH,
+                SourceType.UNKNOWN
+            )) {
+                if (i != sourceType) {
+                    sources.add(i)
+                }
             }
+        }else{
+            sources[0] = sourceType
+            sources.add(SourceType.UNKNOWN)
         }
     }
 

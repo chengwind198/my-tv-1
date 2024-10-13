@@ -234,8 +234,9 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         Log.i(TAG, "${tvModel.tv.title} ${tvModel.errInfo.value.toString()}")
                         hideFragment(playerFragment)
-                        errorFragment.setMsg(tvModel.errInfo.value.toString())
-                        showFragment(errorFragment)
+                        tvModel.errInfo.value.toString().showToast(Toast.LENGTH_LONG)
+//                        errorFragment.setMsg(tvModel.errInfo.value.toString())
+//                        showFragment(errorFragment)
                     }
                 }
             }
@@ -246,7 +247,7 @@ class MainActivity : AppCompatActivity() {
                 if (tvModel.ready.value != null
 //                    && tvModel.tv.id == TVList.positionValue
                 ) {
-                    Log.i(TAG, "loading ${tvModel.tv.title}")
+                    Log.i(TAG, "loading ${tvModel.tv.title}(${tvModel.retryTimes})")
                     hideFragment(errorFragment)
                     showFragment(loadingFragment)
                     playerFragment.play(tvModel)

@@ -20,9 +20,9 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class com.lizongying.mytv0.data.** {
-    <fields>;
-}
-
--dontwarn com.android.org.conscrypt.**
--dontwarn org.apache.harmony.xnet.provider.jsse.**
+#-keep class com.lizongying.mytv0.data.** {
+#    <fields>;
+#}
+#
+#-dontwarn com.android.org.conscrypt.**
+#-dontwarn org.apache.harmony.xnet.provider.jsse.**

@@ -172,6 +172,9 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         viewModel.groupModel.getCurrentList()?.let {
             it.setPosition(position)
             it.setPlaying()
+            it.getCurrent()?.retryTimes = 0
+            it.getCurrent()?.finishedTry = false
+            it.getCurrent()?.sourceIndex = -1
             it.getCurrent()?.setReady()
         }
         (activity as MainActivity).hideMenuFragment()

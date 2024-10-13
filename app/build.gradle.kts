@@ -24,7 +24,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -171,4 +171,6 @@ dependencies {
     implementation(files("libs/lib-decoder-ffmpeg-release.aar"))
 
     implementation(libs.conscrypt)
+
+    implementation("androidx.multidex:multidex:2.0.1")
 }

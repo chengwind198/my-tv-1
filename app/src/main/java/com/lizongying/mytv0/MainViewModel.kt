@@ -109,7 +109,7 @@ class MainViewModel : ViewModel() {
                         }
                     }
                 } else {
-                    Log.e(TAG, "EPG ${response.code()}")
+                    Log.e(TAG, "EPG ${response.code()}-${epg}")
                     R.string.epg_status_err.showToast()
                 }
             }

@@ -94,22 +94,23 @@ object Utils {
      * @return Long 时间戳
      */
     private suspend fun getTimestampFromServer(): Long {
-        return withContext(Dispatchers.IO) {
-            val client = HttpClient.okHttpClient
-            val request = okhttp3.Request.Builder()
-                .url("https://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp")
-                .build()
-            try {
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) return@withContext 0
-                    val string = response.body()?.string()
-                    Gson().fromJson(string, TimeResponse::class.java).data.t.toLong()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                0
-            }
-        }
+          return System.currentTimeMillis();
+//        return withContext(Dispatchers.IO) {
+//            val client = HttpClient.okHttpClient
+//            val request = okhttp3.Request.Builder()
+//                .url("https://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp")
+//                .build()
+//            try {
+//                client.newCall(request).execute().use { response ->
+//                    if (!response.isSuccessful) return@withContext 0
+//                    val string = response.body()?.string()
+//                    Gson().fromJson(string, TimeResponse::class.java).data.t.toLong()
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                0
+//            }
+//        }
     }
 
     suspend fun getISP(): ISP {

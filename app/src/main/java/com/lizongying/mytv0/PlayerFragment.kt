@@ -88,12 +88,12 @@ class PlayerFragment : Fragment() {
                     override fun onIsPlayingChanged(isPlaying: Boolean) {
                         super.onIsPlayingChanged(isPlaying)
                         if (isPlaying) {
+                            Log.i(TAG, "${tvModel?.tv?.title} 开始播放")
                             tvModel?.confirmSourceType()
                             tvModel?.setErrInfo("")
-                            tvModel!!.retryTimes = 0
                         } else {
-                            Log.i(TAG, "${tvModel?.tv?.title} 播放停止")
-//                                tvModel?.setErrInfo("播放停止")
+                            Log.i(TAG, "${tvModel?.tv?.title} 准备播放")
+//                            tvModel?.setErrInfo("${tvModel?.tv?.title} 播放停止")
                         }
                     }
 
@@ -116,13 +116,18 @@ class PlayerFragment : Fragment() {
 
                     override fun onPlayerError(error: PlaybackException) {
                         super.onPlayerError(error)
-                        tvModel?.setErrInfo(R.string.play_error.getString())
+                        tvModel?.setErrInfo(
+                            R.string.play_error.getString() + "(" + tvModel!!.retryTimes + ")" + tvModel?.tv?.title
+                                    + "\n\n" + tvModel?.getVideoUrl()
+                                    + "\n\n" + error.errorCode + ":" + error.message
+                                    + "\n\n" + error.cause
+                        )
                         if (tvModel?.getSourceType() == SourceType.UNKNOWN) {
-                            tvModel?.nextSource()
-                        }
-                        if (tvModel!!.retryTimes < tvModel!!.retryMaxTimes) {
-                            tvModel?.setReady()
-                            tvModel!!.retryTimes++
+                            if (tvModel!!.retryTimes < tvModel!!.retryMaxTimes && !tvModel!!.finishedTry) {
+                                tvModel?.nextSource()
+                                tvModel?.setReady()
+                                tvModel!!.retryTimes++
+                            }
                         }
                     }
                 })
@@ -138,6 +143,7 @@ class PlayerFragment : Fragment() {
     @OptIn(UnstableApi::class)
     fun play(tvModel: TVModel) {
         this.tvModel = tvModel
+        this.tvModel!!.finishedTry = false
         player?.run {
             IgnoreSSLCertificate.ignore()
             val httpDataSource = DefaultHttpDataSource.Factory()
@@ -188,14 +194,18 @@ class PlayerFragment : Fragment() {
                     tvModel.setErrInfo(R.string.play_error.getString())
                     if (tvModel.getSourceType() == SourceType.UNKNOWN) {
                         tvModel.nextSource()
+                        if (tvModel.retryTimes < tvModel.retryMaxTimes) {
+                            tvModel.setReady()
+                            tvModel.retryTimes++
+                        }
                     }
-                    if (tvModel.retryTimes < tvModel.retryMaxTimes) {
-                        tvModel.setReady()
-                        tvModel.retryTimes++
-                    }
+                    Log.i(TAG,"mediaItem is null?-(${tvModel.retryMaxTimes}),${tvModel.getVideoUrl()}"
+                    )
                     return
                 }
                 setMediaItem(mediaItem)
+                tvModel.finishedTry = true;
+                Log.i(TAG, "Continue Last Try-(${tvModel.retryTimes}),${tvModel.getVideoUrl()}")
             }
 
             prepare()
