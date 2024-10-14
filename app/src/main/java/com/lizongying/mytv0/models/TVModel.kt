@@ -29,7 +29,7 @@ class TVModel(var tv: TV) : ViewModel() {
     var retryTimes = 0
     var retryMaxTimes = 10
     var programUpdateTime = 0L
-    var finishedTry =false
+    var finishedTry = false
 
     private var _groupIndex = 0
     val groupIndex: Int
@@ -143,25 +143,48 @@ class TVModel(var tv: TV) : ViewModel() {
         tv = t
     }
 
+    public fun getHost(): String {
+        val url = getVideoUrl()
+        val uri = Uri.parse(url)
+        val host = uri.host
+        return host.toString()
+    }
+
     @OptIn(UnstableApi::class)
     fun buildSource() {
         val url = getVideoUrl() ?: return
         val uri = Uri.parse(url) ?: return
         val path = uri.path ?: return
         val scheme = uri.scheme ?: return
+        val host = uri.host ?: return
+
 
         httpDataSource = DefaultHttpDataSource.Factory()
+//        val dataSourceFactory = DataSource.Factory {
+//            val dataSource = DefaultHttpDataSource.Factory().createDataSource()
+//            dataSource.setRequestProperty("User-Agent", "Player100/1.0")
+//            dataSource.setRequestProperty("Host", host)
+//            dataSource
+//        }
         httpDataSource.setKeepPostFor302Redirects(true)
         httpDataSource.setAllowCrossProtocolRedirects(true)
+//        httpDataSource.setCrossProtocolRedirectsForceOriginal(true)
+        val defaultRequestProperties = mutableMapOf<String, String>()
         tv.headers?.let {
-            httpDataSource.setDefaultRequestProperties(it)
+            defaultRequestProperties["Host"] = host
             it.forEach { (key, value) ->
                 if (key.equals("user-agent", ignoreCase = true)) {
-                    userAgent = value
+                    defaultRequestProperties[userAgent] = value
                     return@forEach
                 }
             }
         }
+        httpDataSource.setDefaultRequestProperties(
+            mapOf(
+                "User-Agent" to "Player100/1.0",
+                "Host" to host
+            )
+        )
 
         _mediaItem = MediaItem.fromUri(uri.toString())
 
@@ -193,7 +216,7 @@ class TVModel(var tv: TV) : ViewModel() {
                     sources.add(i)
                 }
             }
-        }else{
+        } else {
             sources[0] = sourceType
             sources.add(SourceType.UNKNOWN)
         }

@@ -57,7 +57,8 @@ class PlayerFragment : Fragment() {
             override fun onGlobalLayout() {
                 playerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
-                val renderersFactory = context?.let { DefaultRenderersFactory(it) }
+                val renderersFactory =
+                    context?.let { DefaultRenderersFactory(it).setEnableDecoderFallback(true) }
                 val playerMediaCodecSelector = PlayerMediaCodecSelector()
                 renderersFactory?.setMediaCodecSelector(playerMediaCodecSelector)
                 renderersFactory?.setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
@@ -88,11 +89,17 @@ class PlayerFragment : Fragment() {
                     override fun onIsPlayingChanged(isPlaying: Boolean) {
                         super.onIsPlayingChanged(isPlaying)
                         if (isPlaying) {
-                            Log.i(TAG, "${tvModel?.tv?.title} 开始播放")
+                            Log.i(
+                                TAG,
+                                "${tvModel?.tv?.title} 开始播放 : ${tvModel?.getSourceTypeCurrent()}(${tvModel?.retryTimes})"
+                            )
                             tvModel?.confirmSourceType()
                             tvModel?.setErrInfo("")
                         } else {
-                            Log.i(TAG, "${tvModel?.tv?.title} 准备播放")
+                            Log.i(
+                                TAG,
+                                "${tvModel?.tv?.title} 准备播放 : ${tvModel?.getSourceTypeCurrent()}(${tvModel?.retryTimes})"
+                            )
 //                            tvModel?.setErrInfo("${tvModel?.tv?.title} 播放停止")
                         }
                     }
@@ -117,7 +124,7 @@ class PlayerFragment : Fragment() {
                     override fun onPlayerError(error: PlaybackException) {
                         super.onPlayerError(error)
                         tvModel?.setErrInfo(
-                            R.string.play_error.getString() + "(" + tvModel!!.retryTimes + ")" + tvModel?.tv?.title
+                            R.string.play_error.getString() + "(" + tvModel!!.retryTimes + ")" + tvModel?.tv?.title + " -> " + tvModel?.getSourceTypeCurrent()
                                     + "\n\n" + tvModel?.getVideoUrl()
                                     + "\n\n" + error.errorCode + ":" + error.message
                                     + "\n\n" + error.cause
@@ -149,6 +156,20 @@ class PlayerFragment : Fragment() {
             val httpDataSource = DefaultHttpDataSource.Factory()
             httpDataSource.setKeepPostFor302Redirects(true)
             httpDataSource.setAllowCrossProtocolRedirects(true)
+//            httpDataSource.setCrossProtocolRedirectsForceOriginal(true)
+            httpDataSource.setDefaultRequestProperties(
+                mapOf(
+                    "User-Agent" to "Player100/1.0",
+                    "Host" to tvModel.getHost()
+                )
+            )
+//            val dataSourceFactory = DataSource.Factory {
+//                val dataSource = DefaultHttpDataSource.Factory().createDataSource()
+//                dataSource.setRequestProperty("User-Agent", "Player100/1.0")
+//                dataSource.setRequestProperty("Host", tvModel.getHost())
+//                dataSource
+//            }
+
             httpDataSource.setTransferListener(object : TransferListener {
                 override fun onTransferInitializing(
                     source: DataSource,
@@ -199,7 +220,9 @@ class PlayerFragment : Fragment() {
                             tvModel.retryTimes++
                         }
                     }
-                    Log.i(TAG,"mediaItem is null?-(${tvModel.retryMaxTimes}),${tvModel.getVideoUrl()}"
+                    Log.i(
+                        TAG,
+                        "mediaItem is null?-(${tvModel.retryMaxTimes}),${tvModel.getVideoUrl()}"
                     )
                     return
                 }
@@ -224,6 +247,9 @@ class PlayerFragment : Fragment() {
                 requiresSecureDecoder,
                 requiresTunnelingDecoder
             )
+            for (i in infos.indices) {
+                println("getDecoderInfos - ${infos[i]} ( ${mimeType} )")
+            }
             if (mimeType == MimeTypes.VIDEO_H265 && !requiresSecureDecoder && !requiresTunnelingDecoder) {
                 if (infos.size > 0) {
                     val infosNew = infos.find { it.name == "c2.android.hevc.decoder" }

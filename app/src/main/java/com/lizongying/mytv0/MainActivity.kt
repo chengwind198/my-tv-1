@@ -228,7 +228,6 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     hideFragment(loadingFragment)
                     if (tvModel.errInfo.value == "") {
-                        Log.i(TAG, "${tvModel.tv.title} playing")
                         hideFragment(errorFragment)
                         showFragment(playerFragment)
                     } else {
